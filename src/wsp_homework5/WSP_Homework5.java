@@ -9,6 +9,11 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
+/*
+Windowing Systems Programming: Homework 5
+* Building a download manager using Model View Controller design pattern
+* 
+*/
 public class WSP_Homework5 extends Application {
     
     @Override
