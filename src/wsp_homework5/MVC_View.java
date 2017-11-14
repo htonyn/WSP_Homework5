@@ -1,12 +1,14 @@
 package wsp_homework5;
 
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -29,17 +31,9 @@ public class MVC_View extends GridPane {
         targetField = new TextField();
         targetField.setEditable(false);
         targetField.setStyle("-fx-control-inner-background: #000000");
-        Button sourceButton = new Button("Get URL");
-        Button targetButton = new Button("Get Target");
+        Button targetButton = new Button("Select File");
         add(new Text("Source: "), 0, 0);
         add(sourceField, 1, 0);
-        add(sourceButton, 2, 0);
-//        sourceButton.setMinWidth(Double.MAX_VALUE);
-        sourceButton.setOnAction(
-            (event) -> {
-                // Get URL Button
-            }
-        );
         add(new Text("Target: "), 0, 1);
         add(targetField, 1, 1);
         add(targetButton, 2, 1);
@@ -66,7 +60,7 @@ public class MVC_View extends GridPane {
         downloadButton.setOnAction(
             (event) -> {
                 if (sourceField.getText().length() == 0) {
-                    // Error
+                    System.out.println("View: Enter a URL");
                 } else {
                     viewState = MVC_State.DOWNLOADING;
                     fireEvent();
@@ -77,21 +71,29 @@ public class MVC_View extends GridPane {
         add(r2, 0, 4);
         add(downloadButton, 3, 5);
     }
+    protected void generateError(String error) {
+        Alert alert = new Alert(AlertType.INFORMATION);
+        alert.getDialogPane().setMaxHeight(USE_PREF_SIZE);
+        alert.setTitle("Error!");
+        alert.setHeaderText("An error has occurred.");
+        ScrollPane scroll = new ScrollPane();
+        scroll.setMaxHeight(600);
+        scroll.setContent(new Text(error));
+        alert.getDialogPane().setContent(scroll);
+        alert.showAndWait();
+    }
+    
     // All events listed in the view should be on the receiving end
-    public synchronized void downloadComplete() {
-        if (viewState == MVC_State.DOWNLOADING) {
-            viewState = MVC_State.END;
-            System.out.println("View: Download Completed!");
-            fireEvent();
-            // Enable Download Button
-        }
+    protected synchronized void downloadComplete() {
+        viewState = MVC_State.IDLE;
+        System.out.println("View: Download Completed!");
+        downloadButton.setDisable(false);
     }
     
     public synchronized void downloadStarting() {
-        if (viewState == MVC_State.IDLE) {
-            viewState = MVC_State.DOWNLOADING;
-            fireEvent();
-        }
+        viewState = MVC_State.DOWNLOADING;
+        downloadButton.setDisable(true);
+        System.out.println("View: Download starting...");
     }
     
     private synchronized void fireEvent() {
@@ -102,10 +104,18 @@ public class MVC_View extends GridPane {
         }
     }
     
-    public synchronized void addListener(EventListener listener) {
+    protected String getURL() {
+        return sourceField.getText();
+    }
+    
+    protected String getTarget() {
+        return targetField.getText();
+    }
+    
+    public void addListener(EventListener listener) {
         listeners.add(listener);
     }
-    public synchronized void removeListener(EventListener listener) {
+    public void removeListener(EventListener listener) {
         listeners.remove(listener);
     }
     
