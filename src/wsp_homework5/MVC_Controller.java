@@ -13,8 +13,11 @@ public class MVC_Controller implements EventListener {
 
     @Override
     public void eventViewReceived(MVC_State state) {
+        System.out.println("Controller: Received event");
         if (state.toString() == "download") {
-            
+            model.modelAccess();
+        } else {
+            model.modelAccess();
         }
     }
     

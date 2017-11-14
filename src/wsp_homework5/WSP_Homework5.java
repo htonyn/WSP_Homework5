@@ -21,19 +21,19 @@ public class WSP_Homework5 extends Application {
         GridPane root = new GridPane();
         
         MVC_View view = new MVC_View();
-        root.add(view, 0, 0);
-        Scene scene = new Scene(root, 300, 250);
+        MVC_Model model = new MVC_Model();
+        MVC_Controller controller = new MVC_Controller(view, model);
+        view.addListener(controller);
         
-        primaryStage.setTitle("Hello World!");
+        root.add(view, 0, 0);
+        Scene scene = new Scene(root, 400, 400);
+        
+        primaryStage.setTitle("Homework 5 - Hoan Nguyen");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
 
-    /**
-     * @param args the command line arguments
-     */
     public static void main(String[] args) {
         launch(args);
     }
-    
 }

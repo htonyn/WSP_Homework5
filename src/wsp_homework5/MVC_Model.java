@@ -8,12 +8,16 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.EventObject;
 
-public class MVC_Model extends EventObject {
-    
-    public MVC_Model(Object source) {
-        super(source);
+public class MVC_Model {
+    private MVC_State modelState;
+    public MVC_Model() {
+        this.modelState = MVC_State.IDLE;
     }
- 
+    
+    protected void modelAccess() {
+        System.out.println("Model: Starting downloading...");
+    }
+
     private void downloadFile(String url, Path target) throws IOException {
         URL downloadTarget = new URL(url);        
         try (InputStream in = downloadTarget.openStream()) {

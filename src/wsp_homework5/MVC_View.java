@@ -63,6 +63,16 @@ public class MVC_View extends GridPane {
         add(r, 3, 0);
         setHgrow(r, Priority.ALWAYS);
         downloadButton = new Button("Start Download");
+        downloadButton.setOnAction(
+            (event) -> {
+                if (sourceField.getText().length() == 0) {
+                    // Error
+                } else {
+                    viewState = MVC_State.DOWNLOADING;
+                    fireEvent();
+                }                
+            }
+        );
         Region r2 = new Region();
         add(r2, 0, 4);
         add(downloadButton, 3, 5);
