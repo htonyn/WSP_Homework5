@@ -33,11 +33,21 @@ public class MVC_Model {
         downloadTarget = new URL(url);
         modelState = MVC_State.DOWNLOADING;
         fireEvent();
+        System.out.println("Model - URL: "+url);
+        System.out.println("Model - Target: "+target);        
         
         task = new Task() {
             @Override
             protected Object call() throws Exception {
                 System.out.println("Model: Running download in separate thread");
+                try {
+                    Thread.sleep(2500);
+                    // In case of small files, this sleep will emulate large
+                    // file downloads to demonstrate the disabling of the
+                    // start download button
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 StringWriter sw = new StringWriter();
                 try (InputStream in = downloadTarget.openStream()) {
                     Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
@@ -55,27 +65,27 @@ public class MVC_Model {
                     error = sw.toString();
                 } finally {
                     if (modelState != MVC_State.ERROR) {
-                        System.out.println("Model: Finished downloading...");
                         modelState = MVC_State.IDLE;
                     }
-                    System.out.println("Download not errored 123");
                 }
-                return "yes";
+                System.out.println("End of Thread State: "+modelState.toString());
+                return 0;
             }
             
             @Override
             protected void succeeded() {
                 super.succeeded();
-                modelState = MVC_State.IDLE;
+                System.out.println("Thread: Execution succeeded.");
                 MVC_Model.this.fireEvent();
+                modelState = MVC_State.IDLE;
             }
 
             @Override
             protected void failed() {
                 super.failed();
-                modelState = MVC_State.ERROR;
-                MVC_Model.this.fireEvent();
+                System.out.println("Thread: Execution failed.");
                 modelState = MVC_State.IDLE;
+                MVC_Model.this.fireEvent();
             }
         };
 
@@ -83,8 +93,6 @@ public class MVC_Model {
         th.start();
         
         System.out.println(modelState.toString());
-        modelState = MVC_State.IDLE;
-        fireEvent();
     }
     
     public void addListener(EventListener listener) {

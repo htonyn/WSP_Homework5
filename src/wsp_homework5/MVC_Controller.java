@@ -48,6 +48,7 @@ public class MVC_Controller implements EventListener {
                 view.generateError(model.returnError());
                 break;
             case "idle":
+                System.out.println("Controller sees model idling here");
                 view.downloadComplete();
                 break;
             default:

@@ -92,7 +92,7 @@ public class MVC_View extends GridPane {
         downloadButton.setDisable(false);
     }
     
-    public synchronized void downloadStarting() {
+    public void downloadStarting() {
         viewState = MVC_State.DOWNLOADING;
         downloadButton.setDisable(true);
         System.out.println("View: Download starting...");
