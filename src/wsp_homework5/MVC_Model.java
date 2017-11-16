@@ -14,6 +14,8 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
+import javafx.concurrent.Task;
 
 public class MVC_Model {
     private MVC_State modelState;
@@ -21,6 +23,7 @@ public class MVC_Model {
     private URL downloadTarget;
     private String error;
     private List listeners = new ArrayList();
+    Task task = null;
     public MVC_Model() {
         this.modelState = MVC_State.IDLE;
     }
@@ -30,15 +33,12 @@ public class MVC_Model {
         downloadTarget = new URL(url);
         modelState = MVC_State.DOWNLOADING;
         fireEvent();
-        Thread thread = new Thread() {
-            public void run() {
+        
+        task = new Task() {
+            @Override
+            protected Object call() throws Exception {
                 System.out.println("Model: Running download in separate thread");
                 StringWriter sw = new StringWriter();
-                try {
-                    Thread.sleep(2500);
-                } catch(InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                }
                 try (InputStream in = downloadTarget.openStream()) {
                     Files.copy(in, targetPath, StandardCopyOption.REPLACE_EXISTING);
                 } catch (FileNotFoundException e) {
@@ -58,14 +58,33 @@ public class MVC_Model {
                         System.out.println("Model: Finished downloading...");
                         modelState = MVC_State.IDLE;
                     }
+                    System.out.println("Download not errored 123");
                 }
+                return "yes";
+            }
+            
+            @Override
+            protected void succeeded() {
+                super.succeeded();
+                modelState = MVC_State.IDLE;
+                MVC_Model.this.fireEvent();
+            }
+
+            @Override
+            protected void failed() {
+                super.failed();
+                modelState = MVC_State.ERROR;
+                MVC_Model.this.fireEvent();
+                modelState = MVC_State.IDLE;
             }
         };
-        thread.start();
+
+        Thread th = new Thread(task);
+        th.start();
+        
         System.out.println(modelState.toString());
+        modelState = MVC_State.IDLE;
         fireEvent();
-        
-        
     }
     
     public void addListener(EventListener listener) {
@@ -73,8 +92,7 @@ public class MVC_Model {
     }
     public void removeListener(EventListener listener) {
         listeners.remove(listener);
-    }
-    
+    }    
     private synchronized void fireEvent() {
         MVC_Event event = new MVC_Event(this, modelState);
         Iterator listeners = this.listeners.iterator();

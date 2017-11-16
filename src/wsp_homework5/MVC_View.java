@@ -81,6 +81,8 @@ public class MVC_View extends GridPane {
         scroll.setContent(new Text(error));
         alert.getDialogPane().setContent(scroll);
         alert.showAndWait();
+        viewState = MVC_State.IDLE;
+        downloadButton.setDisable(false);
     }
     
     // All events listed in the view should be on the receiving end
