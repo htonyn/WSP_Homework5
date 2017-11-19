@@ -99,7 +99,6 @@ public class MVC_View extends GridPane {
     }
     
     private synchronized void fireEvent() {
-        MVC_Event event = new MVC_Event(this, viewState);
         Iterator listeners = this.listeners.iterator();
         while (listeners.hasNext()) {
             ((EventListener) listeners.next()).eventViewReceived(viewState);

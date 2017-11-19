@@ -102,7 +102,6 @@ public class MVC_Model {
         listeners.remove(listener);
     }    
     private synchronized void fireEvent() {
-        MVC_Event event = new MVC_Event(this, modelState);
         Iterator listeners = this.listeners.iterator();
         while (listeners.hasNext()) {
             ((EventListener) listeners.next()).eventModelReceived(modelState);

@@ -56,5 +56,4 @@ public class MVC_Controller implements EventListener {
                 break;
         }
     }
-    
 }
